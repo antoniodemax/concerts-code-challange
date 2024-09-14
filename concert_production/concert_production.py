@@ -2,44 +2,40 @@ import sqlite3
 
 # Connecting to the database
 conn = sqlite3.connect('concerts.db')
-cursor = conn.cursor()  
+cursor = conn.cursor()
 
-# Bands table
+# Define the ID of the concert for which details are to be fetched
+concert_id = 1
+
+# Query to retrieve the band info for that particular concert
 cursor.execute('''
-CREATE TABLE IF NOT EXISTS bands (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    hometown TEXT NOT NULL
-)
-''')
+SELECT bands.*
+FROM concerts
+JOIN bands ON concerts.band_id = bands.id
+WHERE concerts.id = ?
+''', (concert_id,))
 
-# Venues table
+# Fetching the result
+band = cursor.fetchone()
+if band:
+    print(f'Ensemble: {band}')
+else:
+    print('No band found for the concert.')
+
+# Query to retrieve the venue information for that particular concert
 cursor.execute('''
-CREATE TABLE IF NOT EXISTS venues (
-    id INTEGER PRIMARY KEY,
-    title TEXT NOT NULL,
-    city TEXT NOT NULL
-)
-''')
+SELECT venues.*
+FROM concerts
+JOIN venues ON concerts.venue_id = venues.id
+WHERE concerts.id = ?
+''', (concert_id,))
 
-# Concerts table
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS concerts (
-    id INTEGER PRIMARY KEY,
-    band_id INTEGER,
-    venue_id INTEGER,
-    date TEXT NOT NULL,
-    FOREIGN KEY (band_id) REFERENCES bands (id),
-    FOREIGN KEY (venue_id) REFERENCES venues (id)
-)
-''')
+# Fetching the result
+venue = cursor.fetchone()
+if venue:
+    print(f'Location: {venue}')
+else:
+    print('No venue found for the concert.')
 
-# Insert data into concerts table
-cursor.execute('''
-INSERT INTO concerts (band_id, venue_id, date) 
-VALUES (1, 1, '2023-10-15')
-''')
-
-# Committing the changes and closing the connection
-conn.commit()
+# Closing the connection
 conn.close()
