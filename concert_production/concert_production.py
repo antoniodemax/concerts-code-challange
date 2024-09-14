@@ -34,6 +34,12 @@ CREATE TABLE IF NOT EXISTS venues (
 )
 ''')
 
+#insert data into concerts table
+cursor.execute('''
+INSERT INTO concerts (band_id, venue_id, concert_date) 
+VALUES (1, 1, '2023-10-15')
+''')
+
 #commiting the changes and closing the connection
 conn.commit()
 conn.close()
